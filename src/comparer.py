@@ -11,7 +11,7 @@ ap.add_argument("-f", "--files", required=False,
 ap.add_argument("-d", "--dir", required=False,
                 help="Directory with the binary files.")
 ap.add_argument("-s", "--store", required=False, nargs='?',
-                help="Store the results in a csv file")
+                const="results.csv", help="Store the results in a csv file")
 
 # TODO: Given a directory with binary files, check all files and permutations
 MSG_LENGTH = 1024
@@ -50,7 +50,6 @@ def extract_data(files_list):
 
 if __name__ == '__main__':
     args = vars(ap.parse_args())
-    print(args)
 
     if not args["dir"] and not args["files"]:
         ap.print_help()
@@ -58,8 +57,7 @@ if __name__ == '__main__':
 
     if args["dir"] and not args["files"]:
         if args["store"]:
-            result_file = "results.csv" if not args["store"] else args["store"]
-            csv_file = open(result_file, "w")
+            csv_file = open(args["store"], "w")
 
         results = []
         data_files = create_files_combinations(args["dir"])
@@ -73,10 +71,11 @@ if __name__ == '__main__':
             print(f'Files {f1} and {f2} differ by {d} %')
             if args["store"]:
                 csv_file.write(f'{data_files[c][0]},{data_files[c][1]},{d:2.2f}\n')
-        csv_file.close()
+        if args["store"]:
+            csv_file.close()
 
     # TODO: Fix this function
-    if args["files"] and not args["dir"]:        
+    if args["files"]:
         data_files = create_files_combinations(args["files"])
         msg_list = extract_data(data_files)
         for c, (msg1, msg2) in enumerate(msg_list):
