@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
-import sys
 from itertools import combinations
 from pathlib import Path
 import argparse
 
+# ap = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
 ap = argparse.ArgumentParser()
 ap.add_argument("-f", "--files", required=False,
                 nargs='+', help="Files to compare.")
 ap.add_argument("-d", "--dir", required=False,
                 help="Directory with the binary files.")
+ap.add_argument("-s", "--store", required=False, nargs='?',
+                help="Store the results in a csv file")
 
 # TODO: Given a directory with binary files, check all files and permutations
 MSG_LENGTH = 1024
@@ -48,12 +50,17 @@ def extract_data(files_list):
 
 if __name__ == '__main__':
     args = vars(ap.parse_args())
+    print(args)
 
     if not args["dir"] and not args["files"]:
         ap.print_help()
         exit(1)
 
     if args["dir"] and not args["files"]:
+        if args["store"]:
+            result_file = "results.csv" if not args["store"] else args["store"]
+            csv_file = open(result_file, "w")
+
         results = []
         data_files = create_files_combinations(args["dir"])
         msg_list = extract_data(data_files)
@@ -64,22 +71,15 @@ if __name__ == '__main__':
         results = sorted(results, key=lambda tup: tup[2])
         for (f1, f2, d) in results:
             print(f'Files {f1} and {f2} differ by {d} %')
+            if args["store"]:
+                csv_file.write(f'{data_files[c][0]},{data_files[c][1]},{d:2.2f}\n')
+        csv_file.close()
 
     # TODO: Fix this function
-    if args["files"] and not args["dir"]:
-        print(args["files"])
+    if args["files"] and not args["dir"]:        
         data_files = create_files_combinations(args["files"])
         msg_list = extract_data(data_files)
         for c, (msg1, msg2) in enumerate(msg_list):
             d = compare_files(msg1, msg2)
             print(f'Files {data_files[c][0]} and {data_files[c][1]} differ by {d} %')
 
-    # file_combinations = combinations(file_list, 2)
-    # file1 = open(sys.argv[1], "rb").read()
-    # file2 = open(sys.argv[2], "rb").read()
-    # if not file_is_valid(file1) or not file_is_valid(file2):
-    #     print("Files must be 1024 bytes long.")
-    #     exit(1)
-    # else:
-    #     diff = compare_files(file1, file2)
-    #     print(f'Difference between files is {diff:2.2f}%')
