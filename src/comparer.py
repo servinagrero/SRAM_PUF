@@ -1,26 +1,29 @@
 #!/usr/bin/env python3
+#
+# TODO: Store the final results in a database (mongodb)
+# TODO: Create combinations only for the same region of memory
 
+import re
 from itertools import combinations
 from pathlib import Path
 import argparse
+import datetime
 
-# ap = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
+dump_re = r'.*-(\d{2}-\d{2}-\d{4})-(.{4})-(\d+)$'
+
 ap = argparse.ArgumentParser()
-ap.add_argument("-f", "--files", required=False,
-                nargs='+', help="Files to compare.")
 ap.add_argument("-d", "--dir", required=False,
-                help="Directory with the binary files.")
+                help="directory with the binary files.")
 ap.add_argument("-s", "--store", required=False, nargs='?',
-                const="results.csv", help="Store the results in a csv file")
+                const="results.csv", help="store the results in a csv file")
 
-# TODO: Given a directory with binary files, check all files and permutations
 MSG_LENGTH = 1024
 
 
 def file_is_valid(filename):
     '''Checks if the file lenght is equal to MSG_LENGTH.'''
     with open(filename, "rb") as f:
-        return True if len(f.read()) == 1024 else False
+        return True if len(f.read()) == MSG_LENGTH else False
 
 
 def compare_files(file1, file2):
@@ -48,37 +51,39 @@ def extract_data(files_list):
     return final_list
 
 
+def filter_results(data_list, num=20):
+    final_list = []
+    for i, (f1, f2, d) in enumerate(data_list):
+        if d < num:
+            final_list.append((f1, f2, d))
+    return final_list
+
+
 if __name__ == '__main__':
     args = vars(ap.parse_args())
 
-    if not args["dir"] and not args["files"]:
+    if not args["dir"]:
         ap.print_help()
         exit(1)
 
-    if args["dir"] and not args["files"]:
+    if args["store"]:
+        csv_file = open(args["store"], "w")
+
+    results = []
+    data_files = create_files_combinations(args["dir"])
+    msg_list = extract_data(data_files)
+    for c, (msg1, msg2) in enumerate(msg_list):
+        d = compare_files(msg1, msg2)
+        results.append((data_files[c][0], data_files[c][1], d))
+
+    results = sorted(results, key=lambda tup: tup[2])
+    for c, (f1, f2, d) in enumerate(results):
+        match_f1 = re.match(dump_re, f1)
+        match_f2 = re.match(dump_re, f2)
+        print(f'Files {f1} and {f2} differ by {d} %')
         if args["store"]:
-            csv_file = open(args["store"], "w")
+            csv_file.write(f'0x2000{match_f1.group(2)},0x2000{match_f2.group(2)},{d:2.2f}\n')
 
-        results = []
-        data_files = create_files_combinations(args["dir"])
-        msg_list = extract_data(data_files)
-        for c, (msg1, msg2) in enumerate(msg_list):
-            d = compare_files(msg1, msg2)
-            results.append((data_files[c][0], data_files[c][1], d))
-
-        results = sorted(results, key=lambda tup: tup[2])
-        for (f1, f2, d) in results:
-            print(f'Files {f1} and {f2} differ by {d} %')
-            if args["store"]:
-                csv_file.write(f'{data_files[c][0]},{data_files[c][1]},{d:2.2f}\n')
-        if args["store"]:
-            csv_file.close()
-
-    # TODO: Fix this function
-    if args["files"]:
-        data_files = create_files_combinations(args["files"])
-        msg_list = extract_data(data_files)
-        for c, (msg1, msg2) in enumerate(msg_list):
-            d = compare_files(msg1, msg2)
-            print(f'Files {data_files[c][0]} and {data_files[c][1]} differ by {d} %')
-
+    good_list = filter_results(results)
+    if args["store"]:
+        csv_file.close()
