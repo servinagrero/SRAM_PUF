@@ -13,6 +13,8 @@ Para ello se utiliza la placa de desarrollo STM32-Discovery Kit (STM32L152r6).
 ### Automatización de toma de datos
 
 + Utilizar una raspberry para tomar datos de una placa automaticamente.
++ Utilizar la funcion printf para sacar datos y el modulo serial de python para
+  obtenerlos
 
 ### Estudio de datos
 

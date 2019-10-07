@@ -2,33 +2,47 @@
 #
 # Program to store and retrieve memory dumps into a mongo database
 
-import sys
-import argparse
-from pathlib import Path
-import re
-
 import pymongo
+import serial
 import usb.core
 import usb.util
 
-dump_re = r'.*-(\d{2}-\d{2}-\d{4})-(.{4})-(\d+)$'
+import dump
+
+STM32_VENDOR = 0x0483
+SERIAL_DEV = '/dev/ttyACM'
+BAUD_RATE = 19600
 
 client = pymongo.MongoClient("mongodb://localhost:27017/")
-
 database = client['memory_dumps']
 db_dumps = database['dumps']
 
-path = Path(sys.argv[1])
-data_files = [f.as_posix() for f in path.iterdir() if f.is_file()]
+c = 0
+ser = None
+dev = usb.core.find(idVendor=STM32_VENDOR)
 
-for in_file in data_files:
-    match = re.match(dump_re, in_file)
-    with open(in_file, "rb") as f:
-        dump_data = {
-                'board_id': 'UÿkHHSB9',
-                'date': match.group(1),
-                'mem_dump': f.read(),
-                'mem_position': '0x2000' + match.group(2),
-                }
-        result = db_dumps.insert_one(dump_data)
-        print(f'{"0x2000"+match.group(2)} -> ID {result.inserted_id}')
+while ser is None:
+    try:
+        ser = serial.Serial(SERIAL_DEV+str(c), BAUD_RATE)
+    except serial.SerialException:
+        c += 1
+
+print(f'Device {dev.serial_number} in port {ser.port}')
+
+while True:
+    mem_address = ser.readline().decode("utf-8")
+    raw_data = ser.readline().decode("utf-8")
+
+    mem_address = mem_address[:-1]
+    raw_data = raw_data.split(' ')[:-2]
+
+    dump_data = dump.Dump(dev.serial_number,
+                          raw_data,
+                          mem_address)
+
+# dump_data = dump.Dump(dev.serial_number,
+#                       bytes([int(c) for c in raw_data]),
+#                       mem_address)
+
+    result = db_dumps.insert_one(dump_data.__dict__())
+    print(f'{dev.serial_number} [{mem_address}] -> ID {result.inserted_id}')
