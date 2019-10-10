@@ -11,18 +11,19 @@ MSG_LENGTH = 1024
 
 class Dump():
 
-    def __init__(self, board_id, data, mem_pos,
-                 length=1024, fd=None, timestamp=None):
+    def __init__(self, board_id, data, mem_pos, temp,
+                 length=None, fd=None, timestamp=None):
         self.board_id = board_id
+        self.temp = temp
         self.timestamp = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
         self.mem_pos = mem_pos
         self.fd = fd
-        self.length = length
         if fd is not None:
             with open(fd, "rb") as f_data:
                 self.data = f_data.read()
         else:
             self.data = data
+        self.length = len(data) if length is None else length
 
     def __eq__(self, other):
         if self.length != other.length:
@@ -34,9 +35,17 @@ class Dump():
         else:
             return True
 
+    def __and__(self, other):
+        diff = 0
+        for i in range(0, self.length):
+            if self.data[i] != other.data[i]:
+                diff += 1
+        return diff/self.length
+
     def __dict__(self):
         return {'board_id': self.board_id,
                 'mem_pos': self.mem_pos,
+                'temp': self.temp,
                 'lenght': self.length,
                 'timestamp': self.timestamp,
                 'data': self.data
@@ -66,15 +75,6 @@ def create_files_combinations(data_dir):
     files = [f.as_posix() for f in path.iterdir()
              if f.is_file() and file_is_valid(f.as_posix())]
     return list(combinations(files, 2))
-
-
-def extract_data(files_list):
-    final_list = []
-    for (f1, f2) in files_list:
-        msg1 = open(f1, "rb").read()
-        msg2 = open(f2, "rb").read()
-        final_list.append((msg1, msg2))
-    return final_list
 
 
 def filter_results(data_list, num=20):

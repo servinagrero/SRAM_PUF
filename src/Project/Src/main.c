@@ -121,8 +121,9 @@ int main(void)
   MX_ADC_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t mem_buffer[CHUNK_SIZE] = {0};
-  uint8_t *base_address = (uint8_t *)0x20000000;
+  uint8_t *base_p = (uint8_t *)0x20000000;
+  uint16_t *temp_p = (uint16_t *)0x1FF8007A;
+  uint8_t *uid_p = (uint8_t *)0x1FF80050;
 
   /* USER CODE END 2 */
 
@@ -130,17 +131,34 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-      if(send_en) {
-	  memcpy(mem_buffer, base_address, CHUNK_SIZE);
-	  printf("%p\n", (void *)base_address);
+     if(send_en) {
+	 printf("%#02X", (uint8_t)*uid_p); // Waffer number
+	 // Lot number
+	 uid_p++;
+	 for(int i = 0; i < 7; ++i) {
+	     printf("%01X",(uint8_t)*(uid_p+i));
+	 }
+	 // We need to offset 0x14 positions because engineers at STM32 are bored
+	 uid_p = (uint32_t *)0x1FF80064;
 
-	  for(int c = 0; c < 1024; ++c)
-	    printf("%u ", mem_buffer[c]);
-	  printf("\n");
+	 // X/Y Coords
+	 for(int i = 0; i < 4; ++i) {
+	     printf("%01X", (uint8_t)*(uid_p+i));
+	 }
+	 printf("\n");
 
-	  base_address += CHUNK_SIZE;
-	  send_en = 0;
-	  }
+      	 for(int e = 0; e < 16; ++e) {
+      	     printf("%p\n", (void *)base_p);
+      	     printf("%hu\n", (uint16_t)*temp_p);
+
+      	     for(int c = 0; c < CHUNK_SIZE; ++c)
+      		 printf("%u ", *(base_p + c));
+      	     printf("\n");
+
+      	     base_p += CHUNK_SIZE;
+      	  }
+      	  send_en = 0;
+      	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -258,7 +276,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 19600;
+  huart2.Init.BaudRate = 350000;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -288,16 +306,23 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pin : BUTTON_Pin */
-  GPIO_InitStruct.Pin = BUTTON_Pin;
+  /*Configure GPIO pin : PA0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(BUTTON_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 

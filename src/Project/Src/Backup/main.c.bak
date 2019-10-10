@@ -121,8 +121,8 @@ int main(void)
   MX_ADC_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t mem_buffer[CHUNK_SIZE] = {0};
   uint8_t *base_address = (uint8_t *)0x20000000;
+  uint16_t *temp_p = (uint16_t *)0x1FF8007A;
 
   /* USER CODE END 2 */
 
@@ -130,19 +130,20 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if(send_en) {
-	      for(int e = 0; e < 16; ++ e) {
-		  memcpy(mem_buffer, base_address, CHUNK_SIZE);
-		  printf("%p\n", (void *)base_address);
+     if(send_en) {
+      	  for(int e = 0; e < 16; ++e) {
+      	      printf("%p\n", (void *)base_address);
+      	      printf("%hu\n", (uint16_t)*temp_p);
 
-		  for(int c = 0; c < 1024; ++c)
-		    printf("%u ", mem_buffer[c]);
-		  printf("\n");
+      	      for(int c = 0; c < CHUNK_SIZE; ++c)
+      		printf("%u ", *(base_address + c));
+      	      printf("\n");
 
-		  base_address += CHUNK_SIZE;
-	      }
-	      send_en = 0;
-	  }
+      	      base_address += CHUNK_SIZE;
+
+      	  }
+      	  send_en = 0;
+      	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -260,7 +261,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 19600;
+  huart2.Init.BaudRate = 350000;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -290,12 +291,19 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin : BUTTON_Pin */
   GPIO_InitStruct.Pin = BUTTON_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(BUTTON_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
