@@ -10,7 +10,7 @@ import dump
 SERIAL_DEV = '/dev/ttyUSB'
 BAUD_RATE = 350000
 
-CHUNK_NUM = 16  # Number of memory chunks to store
+CHUNK_NUM = 32  # Number of memory chunks to store
 
 # Initialization of the mongo database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
