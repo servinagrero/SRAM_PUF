@@ -33,7 +33,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define CHUNK_SIZE 1024
+#define CHUNK_SIZE 512
+#define CHUNK_NUM (16384 / CHUNK_SIZE)
 
 uint8_t send_en = 0;
 
@@ -46,6 +47,7 @@ uint8_t send_en = 0;
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc;
+DMA_HandleTypeDef hdma_adc;
 
 UART_HandleTypeDef huart2;
 
@@ -56,9 +58,11 @@ UART_HandleTypeDef huart2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_ADC_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
+void User_Init(void);
 
 /* USER CODE END PFP */
 
@@ -97,9 +101,12 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
+  // Vector to store the values of the ADC
+  // The first value is the vrefint readout
+  // The second is the temperature readout
+  uint32_t adc_values[2];
   /* USER CODE END 1 */
   
-
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -118,39 +125,59 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_ADC_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t *base_p = (uint8_t *)0x20000000;
-  uint16_t *temp_p = (uint16_t *)0x1FF8007A;
-  uint8_t *uid_p = (uint8_t *)0x1FF80050;
-
+  __HAL_ADC_ENABLE(&hadc);
+  HAL_ADC_Start_DMA(&hadc, adc_values, 2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-     if(send_en) {
-	 printf("%#02X", (uint8_t)*uid_p); // Waffer number
-	 // Lot number
-	 uid_p++;
-	 for(int i = 0; i < 7; ++i) {
-	     printf("%01X",(uint8_t)*(uid_p+i));
-	 }
-	 // We need to offset 0x14 positions because engineers at STM32 are bored
+      uint8_t *base_p = (uint8_t *)0x20000000;
+      uint16_t *temp_p = (uint16_t *)0x1FF8007A;
+      uint8_t *uid_p = (uint8_t *)0x1FF80050;
+
+      uint16_t *vdd_cal = (uint16_t *)0x1FF80078;
+
+      uint16_t *temp30_cal = (uint16_t *)0x1FF8007A;
+      uint16_t *temp110_cal = (uint16_t *)0x1FF8007E;
+
+      if(send_en) {
+	  // Waffer number
+	  printf("%#02X", (uint8_t)*uid_p); uid_p++;
+
+	  // Lot number
+	  for(int i = 0; i < 7; ++i)
+	      printf("%01X",(uint8_t)*(uid_p + i));
+
+	 // Offset the memory
 	 uid_p = (uint32_t *)0x1FF80064;
 
-	 // X/Y Coords
 	 for(int i = 0; i < 4; ++i) {
-	     printf("%01X", (uint8_t)*(uid_p+i));
+	     printf("%01X", (uint8_t)*(uid_p + i)); // X/Y Coords in BCD
 	 }
 	 printf("\n");
 
-      	 for(int e = 0; e < 16; ++e) {
-      	     printf("%p\n", (void *)base_p);
-      	     printf("%hu\n", (uint16_t)*temp_p);
+	 // Calibration data for later computations
+	 printf("%d\n", *temp30_cal);
+	 printf("%d\n", *temp110_cal);
+	 printf("%d\n", *vdd_cal);
 
+      	 for(int e = 0; e < CHUNK_NUM; ++e) {
+      	     // Memory address of the chunk
+      	     printf("%p\n", (void *)base_p);
+
+      	     // Voltage value
+      	     printf("%d\n", adc_values[0]);
+
+      	     // Temperature value
+      	     printf("%d\n", adc_values[1]);
+
+      	     // Memory dump of the corresponding region
       	     for(int c = 0; c < CHUNK_SIZE; ++c)
       		 printf("%u ", *(base_p + c));
       	     printf("\n");
@@ -230,26 +257,34 @@ static void MX_ADC_Init(void)
   hadc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
   hadc.Init.Resolution = ADC_RESOLUTION_12B;
   hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+  hadc.Init.ScanConvMode = ADC_SCAN_ENABLE;
+  hadc.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc.Init.LowPowerAutoWait = ADC_AUTOWAIT_DISABLE;
   hadc.Init.LowPowerAutoPowerOff = ADC_AUTOPOWEROFF_DISABLE;
   hadc.Init.ChannelsBank = ADC_CHANNELS_BANK_A;
   hadc.Init.ContinuousConvMode = ENABLE;
-  hadc.Init.NbrOfConversion = 1;
+  hadc.Init.NbrOfConversion = 2;
   hadc.Init.DiscontinuousConvMode = DISABLE;
   hadc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc.Init.DMAContinuousRequests = DISABLE;
+  hadc.Init.DMAContinuousRequests = ENABLE;
   if (HAL_ADC_Init(&hadc) != HAL_OK)
   {
     Error_Handler();
   }
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
   */
-  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Channel = ADC_CHANNEL_VREFINT;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_4CYCLES;
+  sConfig.SamplingTime = ADC_SAMPLETIME_192CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+  */
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
   if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -293,6 +328,22 @@ static void MX_USART2_UART_Init(void)
 
 }
 
+/** 
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void) 
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+
+}
+
 /**
   * @brief GPIO Initialization Function
   * @param None
@@ -306,19 +357,12 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin : PA0 */
   GPIO_InitStruct.Pin = GPIO_PIN_0;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PB15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_15;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
