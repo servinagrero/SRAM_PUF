@@ -14,7 +14,7 @@ CHUNK_NUM = 32  # Number of memory chunks to store
 
 # Initialization of the mongo database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
-database = client['memory_dumps']
+database = client['thesis']
 db_dumps = database['dumps']
 
 ser = None
