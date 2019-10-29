@@ -138,7 +138,6 @@ int main(void)
   while (1)
   {
       uint8_t *base_p = (uint8_t *)0x20000000;
-      uint16_t *temp_p = (uint16_t *)0x1FF8007A;
       uint8_t *uid_p = (uint8_t *)0x1FF80050;
 
       uint16_t *vdd_cal = (uint16_t *)0x1FF80078;
@@ -148,7 +147,7 @@ int main(void)
 
       if(send_en) {
 	  // Waffer number
-	  printf("%#02X", (uint8_t)*uid_p); uid_p++;
+	  printf("%#02x", (uint8_t)*uid_p); uid_p++;
 
 	  // Lot number
 	  for(int i = 0; i < 7; ++i)
