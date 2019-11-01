@@ -145,7 +145,7 @@ int main(void)
       uint16_t *temp30_cal = (uint16_t *)0x1FF8007A;
       uint16_t *temp110_cal = (uint16_t *)0x1FF8007E;
 
-      if(send_en) {
+       if(send_en) {
 	  // Waffer number
 	  printf("%#02x", (uint8_t)*uid_p); uid_p++;
 

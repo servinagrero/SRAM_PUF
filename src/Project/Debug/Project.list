@@ -6774,7 +6774,7 @@ int main(void)
  8002700:	4b41      	ldr	r3, [pc, #260]	; (8002808 <main+0x154>)
  8002702:	60fb      	str	r3, [r7, #12]
 
-      if(send_en) {
+       if(send_en) {
  8002704:	4b41      	ldr	r3, [pc, #260]	; (800280c <main+0x158>)
  8002706:	781b      	ldrb	r3, [r3, #0]
  8002708:	2b00      	cmp	r3, #0

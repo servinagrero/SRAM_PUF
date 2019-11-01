@@ -10,7 +10,7 @@ import dump
 SERIAL_DEV = '/dev/ttyUSB'
 BAUD_RATE = 350000
 
-CHUNK_NUM = 32  # Number of memory chunks to store
+CHUNK_NUM = 64  # Number of memory chunks to store
 
 # Initialization of the mongo database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -52,16 +52,24 @@ while True:
 
         # According to the datasheet, VDD is calculated
         # VDD = 3.3 * VREFINT_CAL / VREFINT_DATA
-        vdd = (3300 * vrefint_cal / vdd_raw) * 0.001
+        if vrefint_cal == 0:
+            vdd = vdd_raw
+        else:
+            vdd = (3300 * vrefint_cal / vdd_raw) * 0.001
 
+        # vdd = vdd_raw
         # According to the datasheet, Tint is calculated
         # We need the calibration values at 30 and 100 degrees
-        # temp = ((110 - 30)/ (Ts_cal_110 - Ts_cal_30))
-        #        * (Ts_data - Ts_cal_30) + 30.0
+        # temp = ((110 - 30)/ (ts_cal_110 - ts_cal_30)) * (ts_data - ts_cal_30) + 30.0
 
-        temp = ((110 - 30) / (temp_cal_110 - temp_cal_30)) \
-            * (temp_raw - temp_cal_30) + 30.0
+        if temp_cal_30 == 0 or temp_cal_110 == 0:
+            temp = temp_raw
+        else:
+            temp = ((110 - 30) / (temp_cal_110 - temp_cal_30)) \
+                * (temp_raw - temp_cal_30) + 30.0
 
+        # temp = temp_raw
+        
         dump_data = dump.Dump(serial_num, raw_data,
                               mem_address,
                               temp, vdd,
