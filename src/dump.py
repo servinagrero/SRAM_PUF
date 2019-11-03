@@ -42,7 +42,7 @@ class Dump():
                 'temp_cal_30': self.temp_cal_30,
                 'temp_cal_110': self.temp_cal_110,
                 'vrefint_cal': self.vrefint_cal,
-                'lenght': self.length,
+                'length': self.length,
                 'timestamp': self.timestamp,
                 'data': self.data
                 }
