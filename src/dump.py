@@ -48,7 +48,7 @@ class Dump():
                 }
 
 
-def compare_files(dump1, dump2):
+def compare_dumps(dump1, dump2):
     '''
     Calculate by how much two dumps differ
     '''
@@ -60,23 +60,3 @@ def compare_files(dump1, dump2):
         if dump1[i] != dump2[i]:
             differ += 1
     return (differ / dump1.length) * 100
-
-
-def create_files_combinations(dumps_lists):
-    '''
-    Given a lists of memory dumps, return every pair
-    combition possible.
-    '''
-    return list(combinations(dumps_lists, 2))
-
-
-def filter_results(dumps_list, threshold=20):
-    '''
-    Given a list of dumps and its difference,
-    keep the pairs that are lower than a given threshold.
-    '''
-    final_list = []
-    for i, (d1, d2, d) in enumerate(dumps_list):
-        if d < threshold:
-            final_list.append((d1, d2, d))
-    return final_list
