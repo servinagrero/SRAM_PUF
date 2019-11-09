@@ -1,0 +1,8 @@
+pandas
+numpy
+bokeh
+matplotlib
+jupyter
+jupyterlab
+ipywidgets
+pymongo
