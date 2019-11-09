@@ -1,0 +1,19 @@
+.reveal p {
+    font-family: 'Iosevka Term', sans-serif;
+    color: #2d28cc;
+}
+
+.slides {
+    width: 95% !important;
+}
+
+h1 {
+    text-decoration: underline !important;
+    text-decoration-color: #888888 !important;
+}
+
+.scrollable {
+    overflow-y: auto  !important;
+    overflow-x: hidden !important;
+    height: 700px;
+}
