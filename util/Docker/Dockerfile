@@ -1,11 +1,9 @@
 FROM python:3.7
 
-# Install the necessary modules
-COPY ./jupyter/requirements.txt /tmp/
+COPY ./requirements.txt /tmp/
 RUN pip install --requirement /tmp/requirements.txt
 
-# Copy the notebooks and the data
-COPY ./jupyter /app
+VOLUME /app
 
 WORKDIR /app
 
