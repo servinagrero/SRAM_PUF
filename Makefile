@@ -1,7 +1,6 @@
 # Makefile to automate the build of different parts of the project
 
 JUP_DIR=src/jupyter
-DOCKER_IMG=tfg_tools
 
 all: docker slides
 
@@ -20,4 +19,5 @@ slides_sans_input:
 	--to slides
 
 docker:
-	docker build -t $(DOCKER_IMG) util/Docker
+	docker build -t tfg_tools util/tfg_tools
+	docker build -t data_script util/data_script

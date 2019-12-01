@@ -9,7 +9,8 @@ Para ello se utiliza la placa de desarrollo STM32-Discovery Kit (STM32L152r6).
     + __datasheets/__: Datasheets and user manuals of the boards used.
     
 + __src/__: Source code files for the project.
-  + __Project/__: STM32 files to program the board.
-  + __[dump.py](src/dump.py)__: Python model to represent a memory dump.
-  + __storer.py__: Python script to recieve and store data. 
+    + __Project/__: STM32 files to program the board.
   + __jupyter/__: Jupyter files to handle and visualize the results. 
+
++ __util/__: Scripts and tools for the project.
+  + __Docker__: Docker contaior jupyter.

@@ -1,2 +1,3 @@
-*/__pycache__/*
-tfg_tools.tar
+__pycache__/
+*.py[cod]
+*.tar*
