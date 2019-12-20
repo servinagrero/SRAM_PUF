@@ -2,23 +2,21 @@
 #
 # Class to store memory dumps from the boards
 
-from itertools import combinations
 from datetime import datetime
 
 
-class Dump():
+class Dump(object):
 
     def __init__(self, board_id,
                  data, mem_pos, temp, vdd,
                  temp_cal_30, temp_cal_110, vrefint_cal,
                  length=None, fd=None, timestamp=None):
-
         self.board_id = board_id
         self.temp = temp
         self.vdd = vdd
-        self.temp_cal_30 = temp_cal_30,
-        self.temp_cal_110 = temp_cal_110,
-        self.vrefint_cal = vrefint_cal,
+        self.temp_cal_30 = temp_cal_30
+        self.temp_cal_110 = temp_cal_110
+        self.vrefint_cal = vrefint_cal
         self.timestamp = datetime.now().strftime('%d-%m-%Y-%H:%M:%S')
         self.mem_pos = mem_pos
         self.data = data
@@ -33,19 +31,6 @@ class Dump():
                 return False
         else:
             return True
-
-    def __dict__(self):
-        return {'board_id': self.board_id,
-                'mem_pos': self.mem_pos,
-                'temp': self.temp,
-                'vdd': self.vdd,
-                'temp_cal_30': self.temp_cal_30,
-                'temp_cal_110': self.temp_cal_110,
-                'vrefint_cal': self.vrefint_cal,
-                'length': self.length,
-                'timestamp': self.timestamp,
-                'data': self.data
-                }
 
 
 def compare_dumps(dump1, dump2):
