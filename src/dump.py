@@ -11,16 +11,16 @@ class Dump(object):
                  data, mem_pos, temp, vdd,
                  temp_cal_30, temp_cal_110, vrefint_cal,
                  length=None, fd=None, timestamp=None):
-        self.board_id = board_id
-        self.temp = temp
-        self.vdd = vdd
-        self.temp_cal_30 = temp_cal_30
-        self.temp_cal_110 = temp_cal_110
-        self.vrefint_cal = vrefint_cal
-        self.timestamp = datetime.now().strftime('%d-%m-%Y-%H:%M:%S')
-        self.mem_pos = mem_pos
-        self.data = data
-        self.length = len(data) if length is None else length
+        self.Board = board_id
+        self.Temp = temp
+        self.Vdd = vdd
+        self.Temp_cal_30 = temp_cal_30
+        self.Temp_cal_110 = temp_cal_110
+        self.Vrefint_cal = vrefint_cal
+        self.Timestamp = datetime.now().strftime('%d-%m-%Y-%H:%M:%S')
+        self.Mem_pos = mem_pos
+        self.Data = data
+        self.Length = len(data) if length is None else length
 
     def __eq__(self, other):
         if self.length != other.length:

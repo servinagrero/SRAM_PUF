@@ -2832,7 +2832,7 @@ LOAD /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.g
                 0x0000000008003eb0                . = ALIGN (0x4)
                 0x0000000008003eb0                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000       0x70 load address 0x0000000008003eb0
+.data           0x0000000020000000       0x74 load address 0x0000000008003eb0
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                _sdata = .
  *(.data)
@@ -2843,30 +2843,30 @@ LOAD /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.g
  .data.uwTickFreq
                 0x0000000020000004        0x4 Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal.o
                 0x0000000020000004                uwTickFreq
+ .data.send_en  0x0000000020000008        0x1 Src/main.o
+                0x0000000020000008                send_en
+ *fill*         0x0000000020000009        0x3 
  .data.SystemCoreClock
-                0x0000000020000008        0x4 Src/system_stm32l1xx.o
-                0x0000000020000008                SystemCoreClock
+                0x000000002000000c        0x4 Src/system_stm32l1xx.o
+                0x000000002000000c                SystemCoreClock
  .data._impure_ptr
-                0x000000002000000c        0x4 /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7-m/libc_nano.a(lib_a-impure.o)
-                0x000000002000000c                _impure_ptr
+                0x0000000020000010        0x4 /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7-m/libc_nano.a(lib_a-impure.o)
+                0x0000000020000010                _impure_ptr
  .data.impure_data
-                0x0000000020000010       0x60 /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7-m/libc_nano.a(lib_a-impure.o)
-                0x0000000020000070                . = ALIGN (0x4)
-                0x0000000020000070                _edata = .
+                0x0000000020000014       0x60 /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7-m/libc_nano.a(lib_a-impure.o)
+                0x0000000020000074                . = ALIGN (0x4)
+                0x0000000020000074                _edata = .
 
-.igot.plt       0x0000000020000070        0x0 load address 0x0000000008003f20
- .igot.plt      0x0000000020000070        0x0 /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7-m/crtbegin.o
-                0x0000000020000070                . = ALIGN (0x4)
+.igot.plt       0x0000000020000074        0x0 load address 0x0000000008003f24
+ .igot.plt      0x0000000020000074        0x0 /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7-m/crtbegin.o
+                0x0000000020000074                . = ALIGN (0x4)
 
-.bss            0x0000000020000070      0x10c load address 0x0000000008003f20
-                0x0000000020000070                _sbss = .
-                0x0000000020000070                __bss_start__ = _sbss
+.bss            0x0000000020000074      0x108 load address 0x0000000008003f24
+                0x0000000020000074                _sbss = .
+                0x0000000020000074                __bss_start__ = _sbss
  *(.bss)
- .bss           0x0000000020000070       0x1c /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7-m/crtbegin.o
+ .bss           0x0000000020000074       0x1c /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7-m/crtbegin.o
  *(.bss*)
- .bss.send_en   0x000000002000008c        0x1 Src/main.o
-                0x000000002000008c                send_en
- *fill*         0x000000002000008d        0x3 
  .bss.heap_end.5149
                 0x0000000020000090        0x4 Src/sysmem.o
  .bss.__malloc_free_list
@@ -2889,7 +2889,7 @@ LOAD /opt/st/stm32cubeide_1.0.2/plugins/com.st.stm32cube.ide.mcu.externaltools.g
                 0x000000002000017c                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x000000002000017c      0x604 load address 0x0000000008003f20
+                0x000000002000017c      0x604 load address 0x0000000008003f24
                 0x0000000020000180                . = ALIGN (0x8)
  *fill*         0x000000002000017c        0x4 
                 0x0000000020000180                PROVIDE (end = .)
@@ -3177,7 +3177,7 @@ OUTPUT(Project.elf elf32-littlearm)
  .debug_macro   0x00000000000150d0       0x16 Src/sysmem.o
  .debug_macro   0x00000000000150e6      0x1ab Src/system_stm32l1xx.o
 
-.debug_line     0x0000000000000000     0x776b
+.debug_line     0x0000000000000000     0x776d
  .debug_line    0x0000000000000000      0x842 Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal.o
  .debug_line    0x0000000000000842      0xafe Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_adc.o
  .debug_line    0x0000000000001340      0x87c Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_adc_ex.o
@@ -3186,13 +3186,13 @@ OUTPUT(Project.elf elf32-littlearm)
  .debug_line    0x0000000000002db7      0x7f8 Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_gpio.o
  .debug_line    0x00000000000035af      0x96b Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_rcc.o
  .debug_line    0x0000000000003f1a      0xf5a Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_uart.o
- .debug_line    0x0000000000004e74      0x7b3 Src/main.o
- .debug_line    0x0000000000005627      0x6c6 Src/stm32l1xx_hal_msp.o
- .debug_line    0x0000000000005ced      0x73b Src/stm32l1xx_it.o
- .debug_line    0x0000000000006428      0x710 Src/syscalls.o
- .debug_line    0x0000000000006b38      0x52c Src/sysmem.o
- .debug_line    0x0000000000007064      0x688 Src/system_stm32l1xx.o
- .debug_line    0x00000000000076ec       0x7f Startup/startup_stm32l152rbtx.o
+ .debug_line    0x0000000000004e74      0x7b5 Src/main.o
+ .debug_line    0x0000000000005629      0x6c6 Src/stm32l1xx_hal_msp.o
+ .debug_line    0x0000000000005cef      0x73b Src/stm32l1xx_it.o
+ .debug_line    0x000000000000642a      0x710 Src/syscalls.o
+ .debug_line    0x0000000000006b3a      0x52c Src/sysmem.o
+ .debug_line    0x0000000000007066      0x688 Src/system_stm32l1xx.o
+ .debug_line    0x00000000000076ee       0x7f Startup/startup_stm32l152rbtx.o
 
 .debug_str      0x0000000000000000    0x8088c
  .debug_str     0x0000000000000000    0x794cc Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal.o

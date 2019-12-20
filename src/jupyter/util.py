@@ -20,8 +20,10 @@ def extract_board_params(board_id):
     return {'Board': board_id,
             'Wafer': board_id[2:4],
             'Lot': board_id[4:18],
-            'X': int(board_id[21:23], 16),
-            'Y': int(board_id[18:20], 16)}
+            'Y': int(board_id[18:20], 16),
+            'X': int(board_id[20:22], 16)}
+
+
 
 def add_to_off(address, starting_address=0x20000000, dump_size=512):
     '''Convert a memory address into an index.'''
