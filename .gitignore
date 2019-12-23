@@ -1,4 +1,5 @@
-__pycache__/
-*.py[cod]
+**/__pycache__
+**/*.py[cod]
 *.tar*
-.ipynb_checkpoints
+**/.ipynb_checkpoints
+**/csv

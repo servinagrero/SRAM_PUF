@@ -5,17 +5,18 @@ For that, we are using the STM32-Discovery Kit. We have two types of board: One 
 
 ## Structure
 
-+ __doc/__: Documentation needed for the project.
-    + __datasheets/__: Datasheets and user manuals of the boards used.
++ `doc/`: Documentation needed for the project.
+    + `datasheets/`: Datasheets and user manuals of the boards used.
 
-+ __src/__: Source code files for the project
++ `src/`: Source code files for the project
 
-  + __Project/__: STM32 files to program the low memory boards.
-  + __Project_HM/__: STM32 files to program the high memory boards.
-  + __dump.py__: Python model to represent a memory dump.
-  + __storer.py__: Python script to recieve and store data.
-  + __jupyter/__: Jupyter files to handle and visualize the results.
+  + `Project/`: STM32 files to program the low memory boards.
+  + `Project_HM/`: STM32 files to program the high memory boards.
+  + `dump.py`: Python model to represent a memory dump.
+  + `storer.py`: Python script to recieve and store data.
+  + `jupyter/`: Jupyter files to handle and visualize the results.
+  + `dash/`: Dash files to visualize the data.
 
-+ __util/__: Scripts and tools for the project.
-  + __tfg_tools__: Docker for jupyter.
-  + __data_script__: Docker for storer script.
++ `util/`: Scripts and tools for the project.
+  + `tfg_tools`: Docker for jupyter.
+  + `data_script`: Docker for storer script.

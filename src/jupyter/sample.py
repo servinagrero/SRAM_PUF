@@ -39,5 +39,9 @@ class Sample(object):
         return sum(self.Data) / len(self.Data) * 100
 
     @staticmethod
+    def uniform(arr):
+        return sum(arr) / len(arr) * 100
+
+    @staticmethod
     def hamming(s1, s2):
         return sum(map(int.__ne__, s1.Data, s2.Data))
