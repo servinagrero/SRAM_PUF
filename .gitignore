@@ -2,4 +2,3 @@
 **/*.py[cod]
 *.tar*
 **/.ipynb_checkpoints
-**/csv
