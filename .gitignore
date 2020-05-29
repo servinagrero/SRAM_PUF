@@ -1,4 +1,12 @@
 **/__pycache__
 **/*.py[cod]
-*.tar*
 **/.ipynb_checkpoints
+
+*.tar*
+
+**/.RData
+**/.Rhistory
+**/*.Rproj
+.Rproj.user
+
+**/node_modules/

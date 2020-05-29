@@ -1,9 +1,0 @@
-pandas
-numpy
-bokeh
-seaborn
-matplotlib
-jupyter
-jupyterlab
-ipywidgets
-pymongo
