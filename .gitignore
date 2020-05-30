@@ -6,7 +6,7 @@
 
 **/.RData
 **/.Rhistory
-**/*.Rproj
+**/*.Rproj*
 .Rproj.user
 
 **/node_modules/
