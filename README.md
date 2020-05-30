@@ -1,22 +1,26 @@
-# Implementation of a Physical Unclonable Function (PUF) on a microprocessor
+# Implementación de una Función Física Inclonable en un microcontrolador
 
-The objective of this project is the creation of a PUF on a microprocessor.
-For that, we are using the STM32-Discovery Kit. We have two types of board: One with 32 KB of RAM and another one with 64 KB of RAM.
+El objetivo de este proyecto es crear una PUF utilizando la memoria SRAM de un microcontrolador, en concreto, dos modelos de la empresa STM.
 
-## Structure
+La memoria que detalla todo lo relacionado con este proyecto se encuentra en el directorio `paper`. Para ver los resultados y leer un resumen del proyecto finalizado, mirar las diapositivas que se encuentran en el directorio `presentation`. 
 
-+ `doc/`: Documentation needed for the project.
-    + `datasheets/`: Datasheets and user manuals of the boards used.
+> Las diapositivas están escritas en Rmarkdown y tendrán que ser compiladas para poder verlas en formato reveal.js
 
-+ `src/`: Source code files for the project
 
-  + `Project/`: STM32 files to program the low memory boards.
-  + `Project_HM/`: STM32 files to program the high memory boards.
+## Estructura
+
++ `doc/`: Datasheets e información del hardware utilizado.
+
++ `src/`: Código fuente de todo lo relacionado con el proyecto
+
+  + `Project/`: Programación para las placas de 32 KB.
+  + `Project_HM/`: Programación para las placas de 64 KB.
   + `dump.py`: Python model to represent a memory dump.
-  + `storer.py`: Python script to recieve and store data.
-  + `jupyter/`: Jupyter files to handle and visualize the results.
-  + `dash/`: Dash files to visualize the data.
+  + `storer.py`: Python script to recieve and store data..
 
-+ `util/`: Scripts and tools for the project.
-  + `tfg_tools`: Docker for jupyter.
-  + `data_script`: Docker for storer script.
++ `util/`: Scripts y utilidades varias para agilizar procesos.
+  + `exporter`: Scripts para exportar y formatear dados desde MongoDB.
+  
++ `paper/`: Ficheros de LaTeX para la memoria final del proyecto
+
++ `presentation/`: Ficheros de Rmarkdown para mostrar el resultado del proyecto.
