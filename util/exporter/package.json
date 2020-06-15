@@ -1,0 +1,17 @@
+{
+  "name": "exporter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "export.js",
+  "dependencies": {
+    "fast-csv": "^3.4.0",
+    "mongo": "^0.1.0",
+    "mongodb": "^3.3.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
