@@ -10,7 +10,7 @@ class Dump(object):
     def __init__(self, board_id,
                  data, mem_pos, temp, vdd,
                  temp_cal_30, temp_cal_110, vrefint_cal,
-                 length=None, fd=None, timestamp=None):
+                 length=None, timestamp=None):
         self.Board = board_id
         self.Temp = temp
         self.Vdd = vdd
@@ -23,11 +23,11 @@ class Dump(object):
         self.Length = len(data) if length is None else length
 
     def __eq__(self, other):
-        if self.length != other.length:
+        if self.Length != other.Length:
             raise ValueError("The length of the dumps is not the same")
 
-        for i in range(0, self.length):
-            if self.data[i] != other.data[i]:
+        for i in range(0, self.Length):
+            if self.Data[i] != other.Data[i]:
                 return False
         else:
             return True

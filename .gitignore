@@ -10,3 +10,9 @@
 .Rproj.user
 
 **/node_modules/
+
+
+paper/*
+!/paper/main.tex
+!/paper/references.bib
+!/paper/Figures/*

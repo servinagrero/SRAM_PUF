@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# from pathlib import Path
-
 try:
     import pymongo
     NOT_MONGO = False
@@ -46,7 +44,6 @@ def power_up_usbs():
     subprocess.run(["ykushcmd", "-u", "a"])
 
 
-# Look for open ports
 def connect_boards():
     '''Connect to all open ports available'''
     if sys.platform.startswith('win'):
@@ -57,9 +54,9 @@ def connect_boards():
         print(f'Number of open ports: {len(ports_paths)}')
 
         boards = []
-        # Bind devices on open ports
         for port in ports_paths:
             ser = serial.Serial(str(port[0]), BAUD_RATE)
+            # Increase read buffer size to prevent data loss when powering up the boards
             ser.ReadBufferSize = 2147483647
             boards.append(ser)
             print(f'[CONNECTED   ] Board in port {port.device}')
@@ -83,7 +80,6 @@ def store_data(data, csv):
             print(f'Dump {result.inserted_id} written to database\n')
 
 
-# Read data from the devices
 def read_data(serial):
     '''
     Read data from one serial port and store it into the database
@@ -95,7 +91,7 @@ def read_data(serial):
     temp_cal_110 = int(serial.readline().decode("utf-8")[:-1])
     vrefint_cal = int(serial.readline().decode("utf-8")[:-1])
 
-    for i in range(args['size']):
+    for _ in range(args['size']):
 
         mem_address = serial.readline().decode("utf-8")[:-1]
         vdd_raw = int(serial.readline().decode("utf-8")[:-1])
@@ -104,17 +100,13 @@ def read_data(serial):
 
         raw_data = [int(b) for b in raw_data.split(' ')[:-1]]
 
-        # According to the datasheet, VDD is calculated
-        # VDD = 3.3 * VREFINT_CAL / VREFINT_DATA
+        # There are some problems with some boards which don't have the calibration values.
+        # In those cases just store the raw value and the calibration values will be
+        # calculated from the rest of the boards
         if vrefint_cal == 0:
             vdd = vdd_raw
         else:
             vdd = (3300 * vrefint_cal / vdd_raw) * 0.001
-
-        # According to the datasheet, Tint is calculated
-        # We need the calibration values at 30 and 100 degrees
-        # temp = ((110 - 30)/ (ts_cal_110 - ts_cal_30))
-        #     * (ts_data - ts_cal_30) + 30.0
 
         if temp_cal_30 == 0 or temp_cal_110 == 0:
             temp = temp_raw
@@ -122,19 +114,17 @@ def read_data(serial):
             temp = ((110 - 30) / (temp_cal_110 - temp_cal_30)) \
                 * (temp_raw - temp_cal_30) + 30.0
 
-        # Extract the memory data
         dump_data = dump.Dump(serial_num, raw_data,
                               mem_address,
                               temp, vdd,
                               temp_cal_30, temp_cal_110, vrefint_cal)
 
         if args['more_verbose']:
-            print(f'{serial_num} [{mem_address}] at {dump_data.timestamp}')
+            print(f'{serial_num} [{mem_address}] at {dump_data.Timestamp}')
             print(f'Temp: {temp:.6f} C, Vdd: {vdd:.8f} V')
 
         store_data(dump_data.__dict__, args['csv'])
     else:
-        # Disconnect the serial port
         print(f'[DISCONNECTED] Board on port {serial.port}')
         serial.close()
 
@@ -159,10 +149,12 @@ if __name__ == '__main__':
         for sample in range(25):
             threads = []
             power_down_usbs()
+            # Some delay to ensure the boards have been turned off
             time.sleep(0.5)
             boards_serials = connect_boards()
             power_up_usbs()
 
+            # Create a thread per board to read multiple boards in parallel
             for board in boards_serials:
                 th = Thread(target=read_data, args=(board,))
                 threads.append(th)
