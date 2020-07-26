@@ -15,4 +15,6 @@
 paper/*
 !/paper/main.tex
 !/paper/references.bib
+!/paper/main.xmpdata
+!/paper/VoronoiAlpha.pdf
 !/paper/Figures/*
